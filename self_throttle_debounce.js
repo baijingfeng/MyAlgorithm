@@ -44,7 +44,7 @@ function debounce(callback, delay) {
 		// 保存this和arguments
 		const that = this
 		const args = arguments
-		// 清楚执行的定时器任务
+		// 清除之前执行的定时器任务
 		if (callback.timeoutId) {
 			clearTimeout(callback.timeoutId)
 		}
