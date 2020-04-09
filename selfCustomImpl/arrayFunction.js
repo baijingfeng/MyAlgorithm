@@ -22,4 +22,57 @@ function selfFind(array) {
 
 // selfFind()
 
-/**  */
+/** 自定义实现concat() */
+Array.prototype.selfConcat() = function(...values) {
+	const arr = []
+	arr.push(...this)
+	if(values.length === 0) {
+		return arr
+	}
+	
+	// 将values中的所有数据依次添加到arr中
+	values.forEach(value => {
+		if (Array.isArray(value)) { // value is a array
+			arr.push(...value)
+		} else {
+			arr.push(value)
+		}
+	})
+	return arr
+}
+
+/** 自定义实现slice() */
+Array.prototype.selfSlice= function(start, end) {
+	const arr = []
+
+	if (this.length === 0) {
+		return arr
+	}
+
+	start = start || 0
+	
+	if (start < 0) {
+		start = start + this.length
+	} else if (start >= this.length) {
+		return arr
+	}
+
+
+	end = end || this.length
+
+	if (end > this.length) {
+		end = this.length
+	} else if (end < 0) {
+		end = end + this.length
+	}
+
+	for (let i = start; i < end; i++) {
+		arr.push(this[i])
+	}
+	return arr
+}
+
+/** 自定义isArray() */
+Array.isArray = function (arg) {
+	return Object.prototype.toString.call(arg) === '[object Array]'
+}
