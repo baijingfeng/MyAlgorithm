@@ -1,4 +1,4 @@
-/** find() */
+/** 自定义实现find() */
 
 function selfFind(array) {
 	const arr = array || [1, 3, 4, 5, 8]
