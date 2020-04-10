@@ -107,7 +107,7 @@
     return new Promise((resolve, reject) => {
       if (value instanceof Promise) {
         value.then(resolve, reject)
-      } else {+++++
+      } else {
         resolve(value)
       }
     })
