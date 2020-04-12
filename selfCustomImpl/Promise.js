@@ -5,7 +5,7 @@
  * 中断Promise链 return new Promise(()=>{})
  */
 //IIFE
-;(function (window) {
+(function (window) {
 	function Promise(excutor) {
 		const self = this
 		self.status = 'pending'
@@ -19,6 +19,12 @@
 		 * 3. 可能需要去执行已保存的待执行成功的回调函数
 		 */
 		function resolve(value) {
+
+			// 如果状态不是pending状态, 直接结束
+			if (self.status != 'pending') {
+				return 
+			}
+
 			self.status = 'resolved'
 			self.data = value
 
@@ -32,6 +38,12 @@
 		}
 
 		function reject(reason) {
+
+			// 如果状态不是pending状态, 直接结束
+			if (self.status != 'pending') {
+				return 
+			}
+
 			self.status = 'rejected'
 			self.data = reason
 
@@ -60,11 +72,11 @@
 
 		onResolved = typeof onResolved === 'function' ? onResolved : (value) => value
 		onRejected =
-			typeof onRejected === 'function'
-				? onRejected
-				: (reason) => {
-						throw reason
-				  }
+			typeof onRejected === 'function' ?
+			onRejected :
+			(reason) => {
+				throw reason
+			}
 
 		return new Promise((resolve, reject) => {
 			function handle(callback) {
@@ -104,27 +116,81 @@
 	Promise.prototype.catch = function (onRejected) {}
 
 	Promise.resolve = function (value) {
-    return new Promise((resolve, reject) => {
-      if (value instanceof Promise) {
-        value.then(resolve, reject)
-      } else {
-        resolve(value)
-      }
-    })
+		return new Promise((resolve, reject) => {
+			if (value instanceof Promise) {
+				value.then(resolve, reject)
+			} else {
+				resolve(value)
+			}
+		})
 
-  }
+	}
 
 	Promise.reject = function (reason) {
-    return new Promise((resolve, reject) => {
-      reject(reason)
-    })
-  }
+		return new Promise((resolve, reject) => {
+			reject(reason)
+		})
+	}
 
-	Promise.all = function (promises) {}
+	Promise.all = function (promises) {
 
-	Promise.race = function (pormises) {}
+		const length = promises.length
 
-	Promise.any = function (promises) {}
+		const values = new Array(length) // 创建指定长度的空数组
+
+		let reaolveCount = 0 // 成功的回调数量
+
+		return new Promise((resolve, reject) => {
+			promises.forEach((p, index)=> {
+				Promise.resolve(p).then(
+					value => {
+
+						resolveCount++ // 完成的数量加1
+
+						values[index] = value // 将value保存在数组中的对应位置
+
+						if (resolveCount === length) { // 如果全部完成了, 调用resolve让返回的promise成功
+							resolve(values)
+						}		 
+					},
+					reason => {
+						reject(reason)
+					}
+				)
+			})
+		})
+	}
+
+	Promise.race = function (pormises) {
+		return new Promise((resolve, reject) => {
+			promises.forEach(p => {
+				Promise.resolve(p).then(
+					value => {
+						resolve(value)
+					},
+					reason => {
+						reject(reason)
+					}
+				)
+			})
+		})
+	}
+
+	Promise.any = function(promises) {}
+
+	Promise.resolveDelay = function(value, time) {
+		return new Promise((resolve, reject) => {
+			setTimeout(() => {
+				if (value instanceof Promise) {
+					value.then(resolve, reject)
+				} else {
+					resolve(value)
+				}
+			}, time)
+		})
+	}
 
 	window.Promise = Promise
+
 })(window)
+``
