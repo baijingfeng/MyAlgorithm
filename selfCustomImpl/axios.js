@@ -20,6 +20,33 @@ function axios({url, method = 'GET', params = {}, data = {}}) {
 		// 打开连接,初始化请求对象
 		request.open(method, url, true)
 
+		// 设置响应数据类型 ==> 自动解析json文本为js对象/数组, 保存给response属性上
+		request.responseType = 'json'
+
+		// 绑定监视request的状态改变的监听
+		request.onreadystatechange = function() {
+			
+			// 如果请求还没有完成,直接结束
+			if (request.readyState !== 4) {
+				return 
+			} 
+
+			const {status} = request
+			// 如果成功了, 取出数据封装成功的响应数据对象response, 调用resolce(response)
+			if (status >= 200 && status < 300) { // 
+				const response = {
+					data: request.response,
+					status,
+					statusText
+				}
+				resolve(response)
+			} else {
+				reject(new Error('request error status is' + status))
+			}
+
+			// 如果失败了, 封装失败相关信息成error对象, 调用reject(error)
+		}
+
 		if (method === 'GET' || method === 'DELETE') {
 			// 发送请求
 			request.send(null)
