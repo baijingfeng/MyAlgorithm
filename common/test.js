@@ -1,4 +1,4 @@
-const params = [2, 8, 3, 80, 1500, 15000, 150000, 2147483647]
+// const params = [2, 8, 3, 80, 1500, 15000, 150000, 2147483647]
 
 function numLenth(num) {
 	let length = 0
@@ -12,7 +12,6 @@ function numLenth(num) {
 function count(num) {
 	let res = 0
 	while (num > 0) {
-	
 		res += numLenth(num)
 		num--
 	}
@@ -47,43 +46,44 @@ function findNum(target) {
 	return result
 }
 
+// const input = params.slice(1)
+// const resultArr = input.map((num) => findNum(num))
 
-
-const input = params.slice(1)
-const resultArr = input.map(num=> findNum(num))
-
-console.log(resultArr)
+// console.log(resultArr)
 
 // console.log(findNum(80))
 
 // findNum(80)
 
 function findDigit2(num) {
-	let str = '', index = 1, last = 1, resNum = num, preStr = '',
 
+	let target = num
+	let str = ''
+		
+	let start = 1
+	let last = 1
+	
 	while (num > 0) {
 		let tempStr = ''
-		while (index <= last) {
-			tempStr += index
-			index++
+		while (start <= last) {
+			tempStr += start
+			start++
 		}
 
-		preStr = str
-
+		target = num
 		str = tempStr
-		
 
-		// console.log('tempStr', tempStr)
-		str += tempStr
-		// console.log('str', str)
-		num -= tempStr.length
+		// console.log('str', str, str.length)
+		// console.log('target', target)
+		num -= str.length, start = 1, last++
 
 		// console.log('num', num)
-		index = 1, last++
+		
 	}
-	// console.log('LastStr', str)
-	console.log('str[num]', str[resNum - 1])
-	return str[resNum - 1]
+	console.log('str:', str, 'target:', target)
+	console.log('result:', str[target - 1])
+	return str[target - 1]
 }
 
+const params = [2, 8, 3, 80, 1500, 15000, 150000, 2147483647] // 2, 2, 0, 2, 1, 9,2
 findDigit2(2147483647)
