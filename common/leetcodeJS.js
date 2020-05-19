@@ -1,5 +1,5 @@
 /** 有重复字符串的排列组合1 */
-permutation1('abc')
+// permutation1('abc')
 
 function permutation1(str) {
 	const ret = []
@@ -37,7 +37,7 @@ function helper(strArr, used, cur, ret) {
 
 /** 有重复字符串的排列组合2 */
 
-var permutation2 = function(S) {
+var permutation2 = function (S) {
 	var res = []
 	var used = []
 	var strArr = S.split('').sort()
@@ -59,4 +59,17 @@ var permutation2 = function(S) {
 			used[i] = 0
 		}
 	}
+}
+
+/** 乘积最大子数组 */
+
+const maxProduct = (nums) => {
+	if (nums.length === 1) {
+		return nums[0]
+	}
+
+	let max = nums[0]
+	let min = nums[0]
+	let result = nums[0]
+
 }
