@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<script>
+			function debounce(callback, delay) {
+				return function () {
+					const that = this
+					const args = arguments
+
+					if (callback.timeoutId) {
+						clearTimeout(callback.timeoutId)
+					}
+
+					callback.timeoutId = setTimeout(() => {
+						callback.apply(that, args)
+						delete callback.timeoutId
+					}, delay)
+				}
+			}
+
+			function throttle(callback, delay) {
+        let last = 0
+				return function () {
+					const now = Date.now()
+					if (now - last >= delay) {
+						// console.log('throttle 事件...')
+						callback.apply(this, arguments)
+						last = now
+					}
+				}
+			}
+
+			let scrollNum = 0
+			const reportScroll = throttle(function () {
+				scrollNum++
+				console.log('scrollNum', scrollNum)
+			}, 1000)
+			window.addEventListener('scroll', reportScroll)
+		</script>
+	</head>
+	<body>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+		<a href="http://www.baidu.com">fsdfsd</a>
+		<h1>hahah</h1>
+	</body>
+</html>
