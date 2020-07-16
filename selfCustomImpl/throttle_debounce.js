@@ -11,7 +11,7 @@
  * @param {*} callback
  * @param {*} delay
  */
-/** 实现节流函数, throttle */
+/** 实现节流函数, throttle */ 
 function throttle(callback, delay) {
 	let last = 0
 	return function () {
