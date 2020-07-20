@@ -41,10 +41,10 @@
  *
  */
 
- /**
-	* 有待优化的地方:
-	* 1. Promise.race和Promise.any, 当状态变为成功后, 应该阻止后续异步任务,不必浪费时间.
-	*/
+/**
+ * 有待优化的地方:
+ * 1. Promise.race和Promise.any, 当状态变为成功后, 应该阻止后续异步任务,不必浪费时间.
+ */
 // 定义为常量, 有三个目的: 复用, 避免出错, 良好的提示
 const PENDING = 'pending' // 等待状态
 const FULFILLED = 'fulfilled' // 成功状态
@@ -123,13 +123,14 @@ class MyPromise {
 	}
 
 	then(successCallback, failCallback) {
-		// 当回调函数不存在的时候, 直接传递值给下一层
-		successCallback = successCallback ? successCallback : value => value
-		failCallback = failCallback
-			? failCallback
-			: reason => {
-					throw reason
-			  }
+		// 当回调函数不存在或者不是函数的时候, 直接传递值给下一层
+		successCallback = typeof successCallback === 'function' ? successCallback : value => value
+		failCallback =
+			typeof failCallback === 'function'
+				? failCallback
+				: reason => {
+						throw reason
+				  }
 
 		const promise2 = new MyPromise((resolve, reject) => {
 			// 首先判断状态
@@ -398,4 +399,6 @@ const p2 = () =>
 //  p2().then(value => console.log(value)).catch(reason => console.log(reason))
 
 // MyPromise.race(['p1']).then(value => console.log(value))
-MyPromise.any([p1(), p2()]).then(value => console.log(value)).catch(reason => console.log(reason))
+MyPromise.any([p1(), p2()])
+	.then(value => console.log(value))
+	.catch(reason => console.log(reason))
