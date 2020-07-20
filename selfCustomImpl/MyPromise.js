@@ -1,9 +1,14 @@
 /**
+ * 四, 手写实现MyPromise源码
+ * 要求: 尽可能还原Promise中的每一个API, 并通过注释的方式描述思路和原理
+ */
+
+/**
  * 1. Promise是一个类
  * 2. new这个Promise的时候会传递一个执行器executor, 执行器会立即执行
- * 3. 执行器excutor, 有两个参数,分别为resolve和reject
+ * 3. 执行器executor, 有两个参数,分别为resolve和reject
  * 4. Promise中有三种状态: pending(等待), fulfilled(成功), rejected(失败)
- * 5. 状态的转变只有两种方式: pending -> fulfilled, pending -> rejected
+ * 5. 状态的转变只有两种方式: pending -> fulfilled; pending -> rejected
  * 6. 一旦状态变为成功或者失败, 将不会再次改变
  * 7. resolve和reject用来更改状态,
  *    resolve将状态从pending转变为fulfilled,
@@ -14,24 +19,25 @@
  *    then方法是属于原型上的函数, 每个promise容器都可以调用then方法
  * 9. then的成功回调函数有一个参数, 表示成功之后的值; 在调用resolve时传递;
  *    then的失败回调函数有一个参数, 表示失败的原因; 在调用reject时传递;
- * 10. 每个promise都有各自的成功值和失败原因, 因而是实例属性
+ * 10. 每个promise都有各自的成功值和失败原因, 因而成功值和失败原因是实例属性
  * 11. then方法里需要考虑pending状态下的情况, 即promise容器中的异步任务还未执行完毕
  * 12. then方法是可以多次被调用的, 多次调用后会传入多个处理函数, 在异步任务执行完毕后,都会被执行
  * 13. then方法是可以被链式调用的,所以每个then方法应该返回一个Promise对象
  * 14. then方法是可以把值传递给下一个then方法的
- * 15. then方法不能返回自身的promise对象, 避免无限循环调用, 识别出来并报错
+ * 15. then方法不能返回自身的promise对象, 避免无限循环调用. 需要识别出来并报错
  * 16. then方法需要对回调函数的错误情况进行处理
  * 17. then方法的参数是可选的, 如果没有参数的时候, 直接传递上一层的值
  * 18. Promise.all是一个静态方法, 解决并发问题;
  * 19. all方法的参数是一个数组, 数组的值可以是普通值也可以是promise对象,
  * 20. all方法返回一个promise对象, 传递的值是一个数组,与参数数组的顺序保持一致,是参数中数组执行的结果
  * 21. all方法当且仅当参数数组中所有的promise均成功时,才返回一个成功状态的promise对象, 否则返回失败状态的promise对象
- * 22. Promise.resolve方法是一个静态方法,返回一个成功的promise对象
+ * 22. Promise.resolve方法是一个静态方法,返回一个promise对象,状态由promise执行后的结果决定;
  * 23. finally方法是无论之前promise链的状态如何,一定会执行, 是一个类方法;
  * 24. finally方法返回的也是一个promise对象
  * 25. catch方法是一个类方法, 用于处理失败情况, 是then(undefined,()=>{})的别名
  * 26. Promise.reject方法是一个静态方法, 返回一个失败的promise对象
  * 27. Promise.race方法是一个静态方法, 类似all方法, 只不过仅有一个成功,就可以返回一个成功的promise
+ * 28. Promise.any类似于race, 只不过遇到失败的不必改变状态, 直到所有的失败,才会失败.有一个成功, 就成功.
  *
  */
 
@@ -251,8 +257,8 @@ class MyPromise {
 	}
 
 	static race(array) {
-		return new Promise((resolve, reject) => {
-			// 如果参数长度为0，则返回一个失败状态的 promise
+		return new MyPromise((resolve, reject) => {
+			// 如果参数长度为0，则返回一个永远等待状态的 promise
 			if (!array.length) {
 				return
 			}
@@ -265,14 +271,42 @@ class MyPromise {
 		})
 	}
 
+	static any(array) {
+		let index = 0 // 标识完成的操作数量
+		return new MyPromise((resolve, reject) => {
+			// 如果参数长度为0，则返回一个成功状态的 promise
+			if (!array.length) {
+				return resolve()
+			}
+
+			const changeIndex = () => {
+				index++
+				// 添加后, 判断下是否结束完所有的异步操作, 如果完成,则传递失败结果
+				if (index === array.length) {
+					// 循环执行结束后,表示所有结果均失败, 传递失败原因, 暂且先传递一个普通错误对象
+					reject(new Error('AggregateError'))
+				}
+			}
+
+			// 遍历包装所有值为promise对象,方便统一处理
+			// 当某一个promise对象执行完毕并且成功后立即调用成功回调函数.
+			// 当遍历执行完毕后, 如果没有成功的, 则改变状态为失败
+			array.forEach(current => {
+				MyPromise.resolve(current).then(resolve, () => changeIndex())
+			})
+		})
+	}
+
 	static resolve(value) {
-		if (value instanceof MyPromise) {
-			// 如果是promise对象,直接返回
-			return value
-		} else {
-			// 如果不是,转换为promise对象并返回
-			return new MyPromise(resolve => resolve(value))
-		}
+		return new MyPromise((resolve, reject) => {
+			if (value instanceof MyPromise) {
+				// 如果是promise对象,直接返回对应的处理状态
+				return value.then(resolve, reject)
+			} else {
+				// 如果不是,直接传递结果
+				resolve(value)
+			}
+		})
 	}
 
 	static reject(err) {
@@ -332,8 +366,8 @@ const p1 = () =>
 
 const p2 = () =>
 	new MyPromise((resolve, reject) => {
-		resolve('p2')
-		// reject('p2, error')
+		// resolve('p2')
+		reject('p2, error')
 	})
 
 // MyPromise.all(['a', 'b', p1(), p2(), 'c']).then(value => console.log(value))
@@ -357,3 +391,5 @@ const p2 = () =>
  */
 
 //  p2().then(value => console.log(value)).catch(reason => console.log(reason))
+
+MyPromise.race(['p1']).then(value => console.log(value))
