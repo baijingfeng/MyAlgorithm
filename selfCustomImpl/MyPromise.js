@@ -41,6 +41,10 @@
  *
  */
 
+ /**
+	* 有待优化的地方:
+	* 1. Promise.race和Promise.any, 当状态变为成功后, 应该阻止后续异步任务,不必浪费时间.
+	*/
 // 定义为常量, 有三个目的: 复用, 避免出错, 良好的提示
 const PENDING = 'pending' // 等待状态
 const FULFILLED = 'fulfilled' // 成功状态
@@ -358,15 +362,16 @@ const promise = new MyPromise((resolve, reject) => {
 	) */
 
 const p1 = () =>
-	new MyPromise(resolve => {
+	new MyPromise((resolve, reject) => {
 		setTimeout(() => {
 			resolve('p1')
+			// reject('p1 error')
 		}, 2000)
 	})
 
 const p2 = () =>
 	new MyPromise((resolve, reject) => {
-		// resolve('p2')
+		resolve('p2')
 		reject('p2, error')
 	})
 
@@ -392,4 +397,5 @@ const p2 = () =>
 
 //  p2().then(value => console.log(value)).catch(reason => console.log(reason))
 
-MyPromise.race(['p1']).then(value => console.log(value))
+// MyPromise.race(['p1']).then(value => console.log(value))
+MyPromise.any([p1(), p2()]).then(value => console.log(value)).catch(reason => console.log(reason))
